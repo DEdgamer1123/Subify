@@ -4,6 +4,10 @@ Automatización de subtítulos SRT: Audio → Voxtral (transcripción) → Gemin
 
 ## Requisitos
 
+> Estos requisitos son solo para desarrollo. **Los usuarios finales NO necesitan instalar nada** — los instaladores ya incluyen todas las dependencias.
+
+### Para desarrollo
+
 - Node.js 18+
 - Python 3.8+
 - ffmpeg en el PATH
@@ -64,6 +68,10 @@ SRT-Automatico/
 
 Descarga los instaladores desde la sección [Releases](https://github.com/DEdgamer1123/Subify/releases):
 
-- **Subify Setup X.X.X.exe** — Instalador para Windows
-- **Subify X.X.X (Portable).exe** — Versión portable (sin instalación)
+| Tipo | Archivo |
+|------|---------|
+| Instalador | Subify Setup 1.0.0.exe |
+| Portable | Subify 1.0.0 (Portable).exe |
+
+**Nota:** La versión instalada incluye todas las dependencias. No necesitas instalar Node.js, Python ni ninguna librería.
 ```
