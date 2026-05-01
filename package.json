@@ -1,0 +1,68 @@
+{
+  "name": "subify",
+  "version": "1.0.0",
+  "description": "Subify — Automatización de subtítulos SRT con Voxtral + IA",
+  "author": "Subify",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:win:nsis": "electron-builder --win nsis",
+    "build:win:portable": "electron-builder --win portable",
+    "publish": "electron-builder --win nsis portable --publish github"
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3",
+    "music-metadata": "^11.0.0"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.subify.app",
+    "productName": "Subify",
+    "copyright": "Copyright © 2026 Subify",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Subify"
+    },
+    "portable": {
+      "artifactName": "${productName} ${version} (Portable).${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "DEdgamer1123",
+      "repo": "Subify"
+    }
+  }
+}

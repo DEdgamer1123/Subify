@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<div class="app-titlebar">
+  <div class="app-titlebar-logo">SUBIFY</div>
+  <div class="app-titlebar-drag"></div>
+  <div class="app-titlebar-winbtns">
+    <button class="winbtn winbtn-min" onclick="api.minimize()"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    <button class="winbtn winbtn-max" onclick="api.maximize()"><svg width="10" height="10" viewBox="0 0 10 10"><rect x="1.5" y="1.5" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <button class="winbtn winbtn-close" onclick="api.close()"><svg width="10" height="10" viewBox="0 0 10 10"><line x1="2" y1="2" x2="8" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="2" x2="2" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-item active" data-page="procesar" onclick="navTo('procesar',this)">
+      <span class="nav-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>Procesar
+    </div>
+    <div class="nav-item" data-page="config" onclick="navTo('config',this)">
+      <span class="nav-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Configurar
+    </div>
+    <div class="nav-item" data-page="ayuda" onclick="navTo('ayuda',this)">
+      <span class="nav-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Ayuda
+    </div>
+    <div style="margin-top:auto;padding:0 0 10px">
+      <div class="nav-item" onclick="nuevaSerie()">
+        <span class="nav-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span>Nueva serie
+      </div>
+    </div>
+    <div class="sidebar-footer"><div class="sidebar-footer-dot"></div>v1.0.0</div>
+  </nav>
+
+  <main class="content">
+
+    <!-- PROCESAR -->
+    <div class="page active" id="page-procesar">
+      <div class="waveform-header">
+        <div class="waveform-title-group">
+          <div class="waveform-title">PROCESAR AUDIOS</div>
+          <div class="waveform-sub">Convierte los audios en subtítulos en 4 pasos sencillos.</div>
+        </div>
+        <div class="waveform-canvas"><svg id="waveform-svg" width="100%" height="50" preserveAspectRatio="none"></svg></div>
+      </div>
+      <div class="procesar-body">
+        <div class="procesar-grid">
+
+          <!-- Fuente -->
+          <div class="step-card" style="grid-column:1;grid-row:1">
+            <div class="step-card-header">
+              <span class="step-number">1</span><span class="step-title">Fuente de audios</span>
+              <span class="step-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+            </div>
+            <div class="step-card-body">
+              <div class="source-toggle">
+                <button class="source-btn active" id="src-pc" onclick="setFuente('pc')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Desde mi PC</button>
+                <button class="source-btn" id="src-drive" onclick="setFuente('drive')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>Google Drive</button>
+              </div>
+              <div id="panel-pc">
+                <div class="field">
+                  <div class="field-label">Carpeta con los audios</div>
+                  <div class="path-row"><input type="text" id="carpeta-audio" placeholder="C:\Users\...\audios" readonly><button class="btn-browse" onclick="elegirCarpetaAudio()">Explorar</button></div>
+                </div>
+              </div>
+              <div id="panel-drive" style="display:none">
+                <div class="field">
+                  <div class="field-label">ID de carpeta de Google Drive</div>
+                  <input type="text" id="drive-id" placeholder="1aBcDeFgHiJkLmNoPqRsTuVwXyZ">
+                  <div class="field-hint">URL: drive.google.com/drive/folders/<strong>ESTE_ID</strong></div>
+                </div>
+                <button class="btn-drive" style="margin-top:6px" onclick="reconectarDrive()">
+                  <div class="btn-drive-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
+                  <div class="btn-drive-text"><span class="btn-drive-label">Reconectar Google Drive</span><span class="btn-drive-sub" id="drive-id-sub">Sin ID configurado</span></div>
+                </button>
+                <div class="field-hint" style="margin-top:4px">Si hay error de token, pulsa el botón para re-autenticar.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Salida -->
+          <div class="step-card" style="grid-column:2;grid-row:1">
+            <div class="step-card-header">
+              <span class="step-number">2</span><span class="step-title">Carpeta de salida</span>
+              <span class="step-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><polyline points="12 11 12 17"/><polyline points="9 14 12 17 15 14"/></svg></span>
+            </div>
+            <div class="step-card-body">
+              <div class="field">
+                <div class="field-label">Donde guardar los SRT generados</div>
+                <div class="path-row"><input type="text" id="carpeta-salida" placeholder="C:\Users\...\SRT"><button class="btn-browse" onclick="elegirSalida()">Explorar</button></div>
+              </div>
+              <div class="field-hint" style="margin-top:5px">Los archivos .srt se guardarán directamente en esta carpeta al terminar.</div>
+            </div>
+          </div>
+
+          <!-- Log (span 2 filas) -->
+          <div class="step-card" style="grid-column:3;grid-row:1/span 2">
+            <div class="step-card-header">
+              <span class="step-number">3</span><span class="step-title">Revisión final y progreso</span>
+              <span class="step-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            </div>
+            <div class="step-card-body">
+              <div class="log-panel">
+                <div class="log-wrap">
+                  <div class="log-header"><span>LOG</span><button class="btn-secondary" style="padding:2px 8px;font-size:9px" onclick="limpiarLog()">limpiar</button></div>
+                  <div class="log-body" id="log"></div>
+                </div>
+                <div class="ring-wrap">
+                  <div class="ring-container">
+                    <svg class="ring-svg" viewBox="0 0 62 62">
+                      <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="50%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#f472b6"/></linearGradient></defs>
+                      <circle class="ring-bg" cx="31" cy="31" r="27"/>
+                      <circle class="ring-fill" id="ring-fill" cx="31" cy="31" r="27"/>
+                    </svg>
+                    <div class="ring-inner"><span class="ring-pct" id="ring-pct">0%</span></div>
+                  </div>
+                  <div class="ring-info">
+                    <div class="ring-status" id="ring-status">listo</div>
+                    <div class="ring-done-icon" id="ring-done">&#x2713;</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 2 -->
+          <div style="grid-column:1/span 2;grid-row:2;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;min-height:0;overflow:hidden">
+
+            <!-- Resumen -->
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="step-number">D</span><span class="step-title">Resumen de proyecto</span>
+                <span class="step-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+              </div>
+              <div class="step-card-body" style="overflow-y:auto">
+                <div class="resumen-title">ESTADÍSTICAS TOTALES DE PROYECTO</div>
+                <div class="resumen-rows">
+                  <div class="resumen-row"><span class="resumen-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><div class="resumen-content"><div class="resumen-label">DURACI&#xD3;N TOTAL:</div><div class="resumen-value accent-cyan" id="res-duracion">&#x2014;</div></div></div>
+                  <div class="resumen-row"><span class="resumen-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><div class="resumen-content"><div class="resumen-label"># ARCHIVOS AUDIO:</div><div class="resumen-value" id="res-archivos">&#x2014;</div></div></div>
+                  <div class="resumen-row"><span class="resumen-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><div class="resumen-content"><div class="resumen-label">CARPETA / DRIVE:</div><div class="resumen-value" id="res-carpeta">&#x2014;</div></div></div>
+                  <div class="resumen-row"><span class="resumen-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span><div class="resumen-content"><div class="resumen-label">PESO TOTAL:</div><div class="resumen-value accent-pink" id="res-peso">&#x2014;</div></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARA ANIMADA -->
+            <div class="step-card face-card">
+              <div class="step-card-body face-card-body">
+                <div id="face-container">
+                  <!--
+                    Sin fondo propio — el step-card ES la cara.
+                    viewBox: 0 0 120 80 (mas ancho que alto, mejor proporcion en el card)
+                    Ojos en (38,42) y (82,42), radio 16
+                    Iris radio 9.5, pupila radio 5
+                  -->
+                  <svg id="face-svg" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+
+                    <!-- OJO IZQUIERDO: group en (38,42) -->
+                    <g id="f-eye-l" transform="translate(38,42)">
+                      <!-- Blanco del ojo con contorno -->
+                      <ellipse id="f-white-l" cx="0" cy="0" rx="16" ry="16"
+                               fill="#ffffff" stroke="#0d0820" stroke-width="2.8"/>
+                      <!-- Iris azul-violeta, se mueve suavemente -->
+                      <ellipse id="f-iris-l" cx="0" cy="0" rx="9.5" ry="9.5"
+                               fill="#5b7be8"/>
+                      <!-- Pupila: sigue al mouse 100% -->
+                      <ellipse id="f-pupil-l" cx="0" cy="0" rx="5" ry="5"
+                               fill="#0d0820"/>
+                      <!-- Brillo CORNEAL: se mueve con la pupila al 20%
+                           Simula el reflejo de la luz en la cornea curva.
+                           Posicionado arriba-derecha de la pupila, ligero desplazamiento -->
+<ellipse id="f-shine-l" cx="2.8" cy="-3"
+                                rx="2.2" ry="1.5"
+                                fill="white" opacity="0.88"/>
+                    </g>
+
+                    <!-- OJO DERECHO: group en (82,42) -->
+                    <g id="f-eye-r" transform="translate(82,42)">
+                      <ellipse id="f-white-r" cx="0" cy="0" rx="16" ry="16"
+                               fill="#ffffff" stroke="#0d0820" stroke-width="2.8"/>
+                      <ellipse id="f-iris-r" cx="0" cy="0" rx="9.5" ry="9.5"
+                               fill="#5b7be8"/>
+                      <ellipse id="f-pupil-r" cx="0" cy="0" rx="5" ry="5"
+                               fill="#0d0820"/>
+                      <ellipse id="f-shine-r" cx="2.8" cy="-3"
+                               rx="2.2" ry="1.5"
+                               fill="white" opacity="0.88"/>
+                    </g>
+
+                    <!-- PARPADOS sleepy: rectángulos independientes FUERA de los grupos -->
+                    <rect id="f-lid-l" x="20" y="0" width="36" height="18" rx="8"
+                             fill="#0c0e1f" opacity="0"/>
+                    <rect id="f-lid-r" x="64" y="0" width="36" height="18" rx="8"
+                             fill="#0c0e1f" opacity="0"/>
+
+                    <!-- CEJAS -->
+                    <path id="f-brow-l" d="M 16 22 Q 30 15 48 19"
+                          fill="none" stroke="#6b7ab0" stroke-width="4" stroke-linecap="round"/>
+                    <path id="f-brow-r" d="M 72 19 Q 90 15 104 22"
+                          fill="none" stroke="#6b7ab0" stroke-width="4" stroke-linecap="round"/>
+
+                    <!-- BOCA -->
+                    <path id="f-mouth" d="M 36 65 Q 60 76 84 65"
+                          fill="none" stroke="#3a4070" stroke-width="3" stroke-linecap="round"/>
+
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Control archivos -->
+            <div class="step-card">
+              <div class="step-card-header">
+                <span class="step-number">C</span><span class="step-title">Control de archivos</span>
+                <span class="step-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+              </div>
+              <div class="step-card-body" style="overflow-y:auto">
+                <div id="cfg-panel-pc" style="display:none">
+                  <div class="cfg-section-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Archivos desde PC:</div>
+                  <div class="cfg-option"><label class="cfg-checkbox-row"><input type="checkbox" id="cfg-renombrar-pc"><span class="cfg-checkbox-box"></span><span class="cfg-checkbox-label">Renombrar archivos a formato <span class="cfg-badge">01, 02...</span></span></label></div>
+                  <div class="cfg-hint">Formatos: 01, 02 &#x2026; 13, 14 &#x2026; etc.</div>
+                </div>
+                <div id="cfg-panel-drive" style="display:none">
+                  <div class="cfg-section-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>Archivos desde Drive:</div>
+                  <div class="cfg-option"><label class="cfg-checkbox-row"><input type="checkbox" id="cfg-descargar-audios"><span class="cfg-checkbox-box"></span><span class="cfg-checkbox-label">Descargar audios de Drive</span></label></div>
+                  <div class="cfg-divider"></div>
+                  <div class="cfg-section-label" style="margin-top:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Renombrar archivos descargados:</div>
+                  <div class="cfg-option"><label class="cfg-checkbox-row"><input type="checkbox" id="cfg-renombrar-drive"><span class="cfg-checkbox-box"></span><span class="cfg-checkbox-label">Renombrar a formato <span class="cfg-badge">01, 02...</span></span></label></div>
+                  <div class="cfg-hint">Los .srt y .vtt siempre se renombran.</div>
+                  <div class="cfg-divider"></div>
+                  <div class="cfg-section-label" style="margin-top:4px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Sobreescribir existentes:</div>
+                  <div class="cfg-option"><label class="cfg-checkbox-row"><input type="checkbox" id="cfg-sobrescribir-srt"><span class="cfg-checkbox-box"></span><span class="cfg-checkbox-label">Sobreescribir SRT <span class="cfg-badge" style="background:rgba(244,114,182,.15);color:var(--pink)">SRT</span></span></label></div>
+                  <div class="cfg-option"><label class="cfg-checkbox-row"><input type="checkbox" id="cfg-sobrescribir-wav"><span class="cfg-checkbox-box"></span><span class="cfg-checkbox-label">Sobreescribir audio <span class="cfg-badge" style="background:rgba(34,211,238,.15);color:var(--cyan)">WAV/MP3</span></span></label></div>
+                  <div class="cfg-hint">Sin &#x2713;: detecta por N&#xB0; de episodio y salta duplicados.</div>
+                </div>
+                <button class="cfg-btn-guardar" onclick="guardarCfgDescarga()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Guardar configuraci&#xF3;n</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="iniciar-bar">
+          <button class="btn-iniciar" id="btn-run" onclick="ejecutar()"><span>&#x25B6;</span><span>INICIAR</span></button>
+          <div class="status-pill" id="status-pill"><div class="status-dot"></div><span id="status-text">listo</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAR -->
+    <div class="page" id="page-config">
+      <div class="waveform-header"><div class="waveform-title-group"><div class="waveform-title">CONFIGURACI&#xD3;N</div><div class="waveform-sub">Las keys se guardan en tu PC, nunca en el proyecto</div></div></div>
+      <div class="page-inner">
+        <div class="info-box">&#x1F512; Guardadas en <code>~/.srt_automatico/config.json</code> &#x2014; fuera del repo, seguras para GitHub.</div>
+        <div class="card"><div class="card-title">Mistral &#x2014; Voxtral (transcripci&#xF3;n)</div><div class="field"><label style="font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px">API Key</label><div class="key-row"><input type="password" id="key-voxtral" placeholder="console.mistral.ai"><button class="key-toggle" onclick="toggleKey('key-voxtral',this)">mostrar</button></div><div class="hint">Obt&#xE9;n tu key en <a href="#" onclick="openExt('https://console.mistral.ai')">console.mistral.ai</a></div></div></div>
+        <div class="card"><div class="card-title">OpenRouter — Corrección IA (opcional)</div><div class="field"><label style="font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px">API Key</label><div class="key-row"><input type="password" id="key-openrouter" placeholder="sk-or-v1-..."><button class="key-toggle" onclick="toggleKey('key-openrouter',this)">mostrar</button></div><div class="hint">Obtén tu key en <a href="#" onclick="openExt('https://openrouter.ai')">openrouter.ai</a></div></div><div class="field" style="margin-top:10px"><label style="font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px">Modelo</label><select id="modelo-openrouter" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 9px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:10px;outline:none"><option value="minimax/minimax-m2.5:free">MiniMax M2.5 Free (default)</option><option value="openai/gpt-4o-mini">GPT-4o Mini</option><option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option><option value="deepseek/deepseek-chat">DeepSeek Chat</option><option value="meta-llama/llama-3.1-8b-instruct">Llama 3.1 8B</option></select></div><div class="field" style="margin-top:10px"><label style="display:flex;align-items:center;cursor:pointer"><input type="checkbox" id="cfg-usar-correccion" style="margin-right:8px;width:16px;height:16px;accent-color:var(--accent)"><span style="font-size:11px;color:var(--text)">Usar corrección con IA</span></label><div class="hint" style="margin-top:4px">Procesa todos los bloques en 1 request (más rápido)</div></div></div>
+        <button class="btn-save" onclick="guardarConfig()">&#x1F4BE;&nbsp;Guardar configuraci&#xF3;n</button>
+        <span id="save-msg" style="margin-left:12px;font-size:11px;color:var(--ok);font-family:'Share Tech Mono',monospace;display:none">&#x2713; guardado</span>
+      </div>
+    </div>
+
+    <!-- AYUDA -->
+    <div class="page" id="page-ayuda">
+      <div class="waveform-header"><div class="waveform-title-group"><div class="waveform-title">AYUDA</div><div class="waveform-sub">Requisitos y configuraci&#xF3;n</div></div></div>
+      <div class="page-inner">
+        <div class="card"><div class="card-title">Requisitos</div><div class="hint" style="line-height:2">1. <strong>Python 3.8+</strong> en el PATH<br>2. <strong>ffmpeg</strong> en el PATH<br>3. Dependencias Python:<code style="background:var(--bg3);padding:6px 10px;display:block;margin:8px 0;border-radius:4px;font-size:10px;color:var(--text)">pip install pydub requests google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client mistralai</code></div></div>
+        <div class="card"><div class="card-title">Google Drive &#x2014; primera vez</div><div class="hint" style="line-height:2">1. Ve a <a href="#" onclick="openExt('https://console.cloud.google.com')">console.cloud.google.com</a><br>2. Crea un proyecto &#x2192; activa la <strong>Google Drive API</strong><br>3. Credenciales &#x2192; Crear &#x2192; <strong>ID OAuth &#x2192; App de escritorio</strong><br>4. Descarga el JSON &#x2192; ren&#xF3;mbralo <code>credentials.json</code><br>5. Mu&#xE9;velo a <code>~/.srt_automatico/credentials.json</code><br>6. La primera vez se abre el navegador para autorizar &#x2014; solo esa vez</div></div>
+        <div class="card"><div class="card-title">Flujo recomendado</div><div class="hint" style="line-height:2.2"><strong>Procesar</strong>: Audio &#x2192; FLAC &#x2192; Voxtral &#x2192; SRT en carpeta</div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal nueva serie -->
+<div id="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 30px;width:400px;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <div style="font-family:'Orbitron',sans-serif;font-size:18px;letter-spacing:3px;color:var(--violet);margin-bottom:8px">NUEVA SERIE</div>
+    <div id="modal-msg" style="font-size:12px;color:var(--text-mid);font-family:'Rajdhani',sans-serif;line-height:1.7;margin-bottom:22px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn-secondary" onclick="modalCancelar()">Cancelar</button>
+      <button id="modal-btn-nolimpiar" class="btn-secondary" onclick="modalNoGuardar()" style="color:var(--err);border-color:var(--err)">No guardar</button>
+      <button id="modal-btn-guardar" class="btn-primary" onclick="modalGuardar()" style="font-size:11px;padding:8px 16px">&#x1F4BE; Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+/**
+ * face.js — Cara animada Subify v3
+ * - SVG puro sin fondo propio (el contenedor ES la cara)
+ * - GSAP para todas las animaciones
+ * - Mouse tracking en toda la ventana
+ * - 12 estados expresivos integrados con la app
+ */
+
+const FaceController = (() => {
+
+  var E = {}
+  var state = 'idle'
+  var idleTimer = null
+  var lookTimer = null
+  var lookScheduled = false
+  var mouseActive = true
+  var lastMouse = Date.now()
+  var rafId = null
+  var idleAlt = 0  // alterna entre idle_a e idle_b
+
+  var target      = { px: 0, py: 0 }
+  var current     = { px: 0, py: 0 }
+  var headTarget  = { x: 0, y: 0 }
+  var headCurrent = { x: 0, y: 0 }
+
+  var PUPIL_RANGE = 4.5
+  var HEAD_RANGE  = 3.0
+
+  // ─────────────────────────────────────────────────────────
+  // RUTAS DE BOCA
+  // idle_a  : sonrisa tranquila (imagen 8)
+  // idle_b  : sonrisa leve con gesto comodo (imagen 9)
+  // hover_a : cejas arriba + ojos abiertos (imagen 4)
+  // hover_b : mirada intensa (imagen 5)
+  // click   : cejas juntas centro, ojos muy cerrados (imagen 6)
+  // check   : boca abierta feliz (imagen 7)
+  // folder  : sorpresa con boca O (imagen 12)
+  // result  : cejas arriba muy separadas, ojos grandes (imagen 11)
+  // error   : cejas V hacia adentro, boca invertida (imagen 13)
+  // confused: ceja L arriba R baja, boca ladeada (imagen 3)
+  // processing: neutral concentrado
+  // sleepy  : ojos muy cerrados
+  // ─────────────────────────────────────────────────────────
+
+  // eyeRY  : scaleY del blanco del ojo [L,R] o numero
+  // browY  : offset Y de cejas [L,R] o numero (neg=arriba)
+  // browR  : rotacion de cejas [L,R] o numero
+  // browSY : scaleY de cejas (para hacer mas gruesas/finas) [L,R] o num
+  // mouthD : SVG path de la boca
+  // speed  : factor de velocidad (>1 = mas rapido)
+
+  var STATES = {
+    // IDLE A: cara relajada, sonrisa suave — imagen 8
+    idle_a: {
+      eyeRY: 1,        browY: 0,       browR: 0,        browSY: 1,
+      mouthD: 'M 38 66 Q 60 75 82 66',
+      speed: 1
+    },
+    // IDLE B: expresion comoda, un poco mas animada — imagen 9
+    idle_b: {
+      eyeRY: 0.88,     browY: 1,       browR: [-3,3],   browSY: 1.1,
+      mouthD: 'M 36 65 Q 60 77 84 65',
+      speed: 0.9
+    },
+    // HOVER A: cejas levantadas, ojos abiertos, sorpresa leve — imagen 4
+    hover_a: {
+      eyeRY: 1.22,     browY: -4,      browR: 0,        browSY: 0.9,
+      mouthD: 'M 38 66 Q 60 75 82 66',
+      speed: 1.3
+    },
+    // HOVER B: mirada intensa, cejas ligeramente juntas — imagen 5
+    hover_b: {
+      eyeRY: 1.1,      browY: [-3,2],  browR: [-6,6],   browSY: 1.15,
+      mouthD: 'M 40 67 Q 60 72 80 67',
+      speed: 1.1
+    },
+    // CLICK: ojos cerrados con fuerza, cejas rectas, sonrisa apretada — imagen 6
+    click: {
+      eyeRY: 0.12,     browY: 2,       browR: [-8,8],   browSY: 1.3,
+      mouthD: 'M 42 65 Q 60 70 78 65',
+      speed: 2.0
+    },
+    // CHECK: felicidad al marcar casilla, boca abierta, ojos brillantes — imagen 7
+    check: {
+      eyeRY: 1.3,      browY: -5,      browR: [3,-3],   browSY: 0.85,
+      mouthD: 'M 34 63 Q 60 80 86 63',
+      speed: 1.5
+    },
+    // FOLDER: sorpresa al elegir carpeta — imagen 12
+    folder: {
+      eyeRY: 1.55,     browY: -7,      browR: 0,        browSY: 0.8,
+      mouthD: 'M 44 64 Q 60 79 76 64',
+      speed: 0.75
+    },
+    // RESULT: cejas muy arriba separadas, cara de "wow estos resultados" — imagen 11
+    result: {
+      eyeRY: 1.4,      browY: [-6,-6], browR: [-4,4],   browSY: 0.8,
+      mouthD: 'M 38 63 Q 60 80 82 63',
+      speed: 1.2
+    },
+    // ERROR: cejas en V hacia adentro, boca caida — imagen 13
+    error: {
+      eyeRY: 1.08,     browY: [0,0],   browR: [10,-10], browSY: 1.2,
+      mouthD: 'M 40 70 Q 60 62 80 70',
+      speed: 0.85
+    },
+    // CONFUSED: ceja izq arriba, ceja der baja, boca ladeada — imagen 3 mejorada
+    confused: {
+      eyeRY: [1.05,0.75], browY: [-4,5], browR: [-3,14], browSY: [0.9,1.2],
+      mouthD: 'M 37 66 Q 55 72 80 63',
+      speed: 0.9
+    },
+    // PROCESSING: concentracion, cejas sutilmente juntas
+    processing: {
+      eyeRY: 1,        browY: -1,      browR: [3,-3],   browSY: 1.1,
+      mouthD: 'M 40 67 Q 60 69 80 67',
+      speed: 1.1
+    },
+    // DETERMINED_START: ojos cerrados -> abertura con energia (boton iniciar)
+    determined_start: {
+      eyeRY: 0.1,     browY: -4,      browR: 0,        browSY: 0.9,
+      mouthD: 'M 38 65 Q 60 72 82 65',
+      speed: 1.8
+    },
+    // PLAYFUL_TICKLE: ojos cerrados -> abiertos sorprendidos (click en cara)
+    playful_tickle: {
+      eyeRY: 0.15,    browY: [-6,2],   browR: [-8,8],   browSY: [0.85,1.1],
+      mouthD: 'M 35 68 Q 60 62 85 68',
+      speed: 1.5
+    },
+    // SLEEPY: ojos muy cerrados, cejas arriba (para que queden sobre los párpados)
+    sleepy: {
+      eyeRY: 0.22,     browY: -2,      browR: 0,        browSY: 1.0,
+      mouthD: 'M 40 67 Q 60 70 80 67',
+      speed: 0.4
+    },
+  }
+
+  // Alias publico: idle = idle_a o idle_b alternando
+  function _idleState() { return idleAlt % 2 === 0 ? 'idle_a' : 'idle_b' }
+
+  // ── INIT ─────────────────────────────────────────────────
+  function init() {
+    E = {
+      face:   document.getElementById('face-svg'),
+      cnt:    document.getElementById('face-container'),
+      wL:     document.getElementById('f-white-l'),
+      wR:     document.getElementById('f-white-r'),
+      iL:     document.getElementById('f-iris-l'),
+      iR:     document.getElementById('f-iris-r'),
+      pL:     document.getElementById('f-pupil-l'),
+      pR:     document.getElementById('f-pupil-r'),
+      sL:     document.getElementById('f-shine-l'),
+      sR:     document.getElementById('f-shine-r'),
+      lidL:   document.getElementById('f-lid-l'),
+      lidR:   document.getElementById('f-lid-r'),
+      bL:     document.getElementById('f-brow-l'),
+      bR:     document.getElementById('f-brow-r'),
+      mouth:  document.getElementById('f-mouth'),
+    }
+    if (!E.face) return
+    // Inicializar párpados: translateY=5, opacity=0
+    if (E.lidL) { E.lidL.setAttribute('x', '20'); E.lidL.style.transform = 'translateY(5)'; E.lidL.style.opacity = '0' }
+    if (E.lidR) { E.lidR.setAttribute('x', '64'); E.lidR.style.transform = 'translateY(5)'; E.lidR.style.opacity = '0' }
+    _initLidColor()
+    _trackMouse()
+    _trackUI()
+    _startIdleWatch()
+    _startRaf()
+    _breathing()
+    _applyState('idle_a')
+  }
+
+  function _initLidColor() {
+    // Ya no necesita setear fill - los párpados tienen fill fijo en HTML
+  }
+
+  // ── MOUSE TRACKING ───────────────────────────────────────
+  function _trackMouse() {
+    document.addEventListener('mousemove', function(e) {
+      lastMouse   = Date.now()
+      mouseActive = true
+      if (!E.face) return
+      var r  = E.face.getBoundingClientRect()
+      var cx = r.left + r.width / 2
+      var cy = r.top  + r.height / 2
+      var dx = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth  * 0.5)))
+      var dy = Math.max(-1, Math.min(1, (e.clientY - cy) / (window.innerHeight * 0.5)))
+      target.px = dx * PUPIL_RANGE
+      target.py = dy * PUPIL_RANGE
+      var dist = Math.sqrt(dx*dx + dy*dy)
+      var hf   = Math.max(0, (dist - 0.3) / 0.7)
+      headTarget.x = dx * HEAD_RANGE * hf
+      headTarget.y = dy * HEAD_RANGE * hf * 0.55
+    })
+
+    if (E.cnt) {
+      // Hover: alterna entre hover_a y hover_b
+      var hoverAlt = 0
+      E.cnt.addEventListener('mouseenter', function() {
+        if (state === 'idle_a' || state === 'idle_b') {
+          _applyState(hoverAlt % 2 === 0 ? 'hover_a' : 'hover_b')
+          hoverAlt++
+        }
+      })
+      E.cnt.addEventListener('mouseleave', function() {
+        if (state === 'hover_a' || state === 'hover_b') _goIdle()
+      })
+      E.cnt.addEventListener('mousedown', function() { _bounce() })
+    }
+
+    document.querySelectorAll('input, textarea').forEach(function(inp) {
+      inp.addEventListener('focus', function() {
+        if (state === 'idle_a' || state === 'idle_b' || state === 'hover_a' || state === 'hover_b') {
+          _applyState('processing')
+        }
+        if (!E.face) return
+        var ir = inp.getBoundingClientRect()
+        var sr = E.face.getBoundingClientRect()
+        target.px = Math.max(-1, Math.min(1, (ir.left + ir.width/2  - (sr.left + sr.width/2))  / (window.innerWidth  * 0.5))) * PUPIL_RANGE
+        target.py = Math.max(-1, Math.min(1, (ir.top  + ir.height/2 - (sr.top  + sr.height/2)) / (window.innerHeight * 0.5))) * PUPIL_RANGE
+      })
+      inp.addEventListener('blur', function() {
+        if (state === 'processing') _goIdle()
+      })
+    })
+  }
+
+  // ── UI EVENTS ────────────────────────────────────────────
+  function _trackUI() {
+    // 1. Checkbox: marcar=content_check, desmarcar=doubt_undo
+    document.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        _applyState(cb.checked ? 'check' : 'confused')
+        setTimeout(function() { if (state==='check'||state==='confused') _goIdle() }, 1500)
+      })
+    })
+
+    // 2. Botón fuente (PC/Drive): curious_scan
+    var bPC = document.getElementById('src-pc')
+    var bDr = document.getElementById('src-drive')
+    if (bPC) bPC.addEventListener('click', function() {
+      _applyState('folder'); setTimeout(function(){_goIdle()},1500)
+    })
+    if (bDr) bDr.addEventListener('click', function() {
+      _applyState('folder'); setTimeout(function(){_goIdle()},1500)
+    })
+
+    // 3. Carpeta audio: attentive_listen
+    var aIn = document.getElementById('carpeta-audio')
+    if (aIn) {
+      aIn.addEventListener('input', function() {
+        if (aIn.value) { _applyState('folder'); setTimeout(function(){_goIdle()},1500) }
+      })
+      new MutationObserver(function() {
+        if (aIn.value) { _applyState('folder'); setTimeout(function(){_goIdle()},1500) }
+      }).observe(aIn, { attributes: true, attributeFilter: ['value'] })
+    }
+
+    // 4. Carpeta salida: focused_place
+    var sIn = document.getElementById('carpeta-salida')
+    if (sIn) {
+      sIn.addEventListener('input', function() {
+        if (sIn.value) { _applyState('folder'); setTimeout(function(){_goIdle()},1500) }
+      })
+      new MutationObserver(function() {
+        if (sIn.value) { _applyState('folder'); setTimeout(function(){_goIdle()},1500) }
+      }).observe(sIn, { attributes: true, attributeFilter: ['value'] })
+    }
+
+    // 5. Drive ID: concentrating
+    var dIn = document.getElementById('drive-id')
+    if (dIn) {
+      dIn.addEventListener('input', function() { if (state==='idle_a'||state==='idle_b') _applyState('processing') })
+      dIn.addEventListener('blur',  function() { if (state==='processing') _goIdle() })
+    }
+
+    // 6. Reconectar Drive: hopeful_connect
+    var bConn = document.querySelector('.btn-drive')
+    if (bConn) bConn.addEventListener('click', function() {
+      _applyState('folder')
+      setTimeout(function(){_applyState('processing')},600)
+    })
+
+    // 7. Guardar config: content_check
+    var bSave = document.querySelector('.cfg-btn-guardar')
+    if (bSave) bSave.addEventListener('click', function() {
+      _applyState('check'); setTimeout(function(){_goIdle()},1500)
+    })
+
+    // 11. Click en la cara: playful_tickle
+    var faceCnt = document.getElementById('face-container')
+    if (faceCnt) faceCnt.addEventListener('click', function() {
+      _applyState('playful_tickle')
+      setTimeout(function(){ _goIdle() }, 1500)
+    })
+  }
+
+  // ── RAF ──────────────────────────────────────────────────
+  function _startRaf() {
+    function tick() {
+      var ps = mouseActive ? 0.09 : 0.04
+      current.px += (target.px - current.px) * ps
+      current.py += (target.py - current.py) * ps
+      var hs = mouseActive ? 0.032 : 0.018
+      headCurrent.x += (headTarget.x - headCurrent.x) * hs
+      headCurrent.y += (headTarget.y - headCurrent.y) * hs
+
+      gsap.set(E.pL, { x: current.px,         y: current.py          })
+      gsap.set(E.pR, { x: current.px,         y: current.py          })
+      gsap.set(E.iL, { x: current.px * 0.38,  y: current.py * 0.38   })
+      gsap.set(E.iR, { x: current.px * 0.38,  y: current.py * 0.38   })
+      // Brillo corneal: se mueve opuesto y menos (reflejo en cornea curva)
+      gsap.set(E.sL, { x: current.px * 0.18 + 2.8, y: current.py * 0.12 - 3 })
+      gsap.set(E.sR, { x: current.px * 0.18 + 2.8, y: current.py * 0.12 - 3 })
+
+      if (!gsap.isTweening(E.face)) {
+        gsap.set(E.face, { x: headCurrent.x, y: headCurrent.y })
+      }
+      rafId = requestAnimationFrame(tick)
+    }
+    rafId = requestAnimationFrame(tick)
+  }
+
+  function _bounce() {
+    var prev = state
+    _applyState('click')
+    gsap.timeline()
+      .to(E.face, { scale: 0.91, duration: 0.06, ease: 'power3.in',           transformOrigin: 'center center' })
+      .to(E.face, { scale: 1,    duration: 0.55, ease: 'elastic.out(1.1,0.5)', transformOrigin: 'center center',
+        onComplete: function() { if (state === 'click') _goIdle() }
+      })
+  }
+
+  // ── IDLE WATCH ───────────────────────────────────────────
+  function _startIdleWatch() {
+    idleTimer = setInterval(function() {
+      var el = Date.now() - lastMouse
+      if (el > 2500 && mouseActive) {
+        mouseActive = false
+        gsap.to(target,     { px: 0, py: 0, duration: 1.1, ease: 'power2.inOut' })
+        gsap.to(headTarget, { x: 0,  y: 0,  duration: 1.6, ease: 'power2.inOut' })
+      }
+      if (el > 4500 && !['sleepy','processing','error','folder','check','result'].includes(state)) {
+        _scheduleRandomLook()
+      }
+      if (el > 15000 && (state === 'idle_a' || state === 'idle_b')) _applyState('sleepy')
+      if (el < 200 && state === 'sleepy') _goIdle()
+    }, 1000)
+  }
+
+  function _scheduleRandomLook() {
+    if (lookScheduled || mouseActive) return
+    lookScheduled = true
+    lookTimer = setTimeout(function() {
+      if (!mouseActive) {
+        var a = Math.random() * Math.PI * 2
+        var d = 0.2 + Math.random() * 0.7
+        gsap.to(target, { px: Math.cos(a)*PUPIL_RANGE*d, py: Math.sin(a)*PUPIL_RANGE*d*0.5, duration: 0.65, ease: 'power2.inOut' })
+      }
+      lookScheduled = false
+    }, 900 + Math.random() * 2800)
+  }
+
+  function _breathing() {
+    gsap.to(E.face, { y: -2.5, duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1, transformOrigin: 'center center' })
+  }
+
+  // Volver al idle alternando entre a y b
+  function _goIdle() {
+    idleAlt++
+    _applyState(_idleState())
+  }
+
+  // ── APLICAR ESTADO ────────────────────────────────────────
+  function _applyState(name) {
+    if (!STATES[name] || !E.face) return
+    state = name
+    var s   = STATES[name]
+    var spd = 1 / (s.speed || 1)
+    var dur = 0.32 * spd
+
+    var tl = gsap.timeline({ defaults: { ease: 'power2.inOut' } })
+
+    // Ojos: scaleY
+    var eyeL = Array.isArray(s.eyeRY) ? s.eyeRY[0] : s.eyeRY
+    var eyeR = Array.isArray(s.eyeRY) ? s.eyeRY[1] : s.eyeRY
+    tl.to(E.wL, { scaleY: eyeL,              duration: dur, transformOrigin: 'center center' }, 0)
+      .to(E.wR, { scaleY: eyeR,              duration: dur, transformOrigin: 'center center' }, 0)
+      .to(E.iL, { scaleY: Math.min(eyeL, 1), duration: dur, transformOrigin: 'center center' }, 0)
+      .to(E.iR, { scaleY: Math.min(eyeR, 1), duration: dur, transformOrigin: 'center center' }, 0)
+
+    // Cejas: posicion, rotacion y grosor
+    var bYL  = Array.isArray(s.browY)  ? s.browY[0]  : s.browY
+    var bYR  = Array.isArray(s.browY)  ? s.browY[1]  : s.browY
+    var bRL  = Array.isArray(s.browR)  ? s.browR[0]  : s.browR
+    var bRR  = Array.isArray(s.browR)  ? s.browR[1]  : -(s.browR)
+    var bSL  = Array.isArray(s.browSY) ? s.browSY[0] : s.browSY
+    var bSR  = Array.isArray(s.browSY) ? s.browSY[1] : s.browSY
+    tl.to(E.bL, { y: bYL, rotation: bRL, scaleY: bSL, duration: dur*1.1, transformOrigin: 'center center' }, 0)
+      .to(E.bR, { y: bYR, rotation: bRR, scaleY: bSR, duration: dur*1.1, transformOrigin: 'center center' }, 0)
+
+    // Boca
+    tl.to(E.mouth, { attr: { d: s.mouthD }, duration: dur * 1.1 }, 0)
+
+    // Parpados sleepy: translateY 5 → 32 + opacity, sincronizado con los ojos
+    if (name === 'sleepy') {
+      tl.to(E.lidL, { translateY: 32, duration: dur, opacity: 1 }, 0)
+      tl.to(E.lidR, { translateY: 32, duration: dur, opacity: 1 }, 0)
+    } else {
+      tl.to(E.lidL, { translateY: 5, duration: dur, opacity: 0 }, 0)
+      tl.to(E.lidR, { translateY: 5, duration: dur, opacity: 0 }, 0)
+    }
+
+    // Efectos especiales
+    if (name === 'folder') {
+      // Rebote de sorpresa
+      tl.to(E.face, { scale: 1.08, duration: 0.1,  ease: 'power3.out',      transformOrigin: 'center center' }, 0)
+        .to(E.face, { scale: 1,    duration: 0.55, ease: 'elastic.out(1,0.5)', transformOrigin: 'center center' })
+    }
+    if (name === 'check') {
+      // Saltito de alegria
+      tl.to(E.face, { y: -8,  scale: 1.05, duration: 0.18, ease: 'power2.out', transformOrigin: 'center center' }, 0.05)
+        .to(E.face, { y: 0,   scale: 1,    duration: 0.5,  ease: 'bounce.out', transformOrigin: 'center center' })
+    }
+    if (name === 'result') {
+      tl.to(E.face, { scale: 1.07, duration: 0.15, ease: 'power2.out', transformOrigin: 'center center' }, 0.1)
+        .to(E.face, { scale: 1,    duration: 0.6,  ease: 'elastic.out(1,0.5)', transformOrigin: 'center center' })
+    }
+    if (name === 'error') {
+      tl.to(E.face, { keyframes: [
+        { x: -6, duration: 0.05 }, { x: 6, duration: 0.05 },
+        { x: -5, duration: 0.05 }, { x: 5, duration: 0.05 },
+        { x: -3, duration: 0.05 }, { x: 0, duration: 0.05 }
+      ]}, 0.1)
+    }
+    if (name === 'confused') {
+      // Pequeno tilt de cabeza
+      tl.to(E.face, { rotation: 6, duration: 0.3, ease: 'power2.out', transformOrigin: 'center center' }, 0.1)
+        .to(E.face, { rotation: 0, duration: 0.5, ease: 'elastic.out(1,0.6)', transformOrigin: 'center center' }, 0.5)
+    }
+
+    // Badge
+    var badge = document.getElementById('face-state-badge')
+    if (badge) badge.textContent = name
+  }
+
+  // API publica — setState mapea a _applyState pero 'idle' -> alterna
+  function setState(name) {
+    if (name === 'idle') { _goIdle(); return }
+    if (name === 'success') { _applyState('result'); return }
+    if (name === 'surprised' || name === 'hover') { _applyState('folder'); return }
+    if (name === 'playful') { _applyState('check'); return }
+    _applyState(name)
+  }
+
+  return {
+    init:     init,
+    setState: setState,
+    getState: function() { return state }
+  }
+
+
+})()
+</script>
+<script>
+// WAVEFORM
+function buildWaveform(svgId){const svg=document.getElementById(svgId);if(!svg)return;const W=svg.parentElement.offsetWidth||600,H=50,barW=3,gap=2,total=barW+gap,count=Math.floor(W/total),cy=H/2;let html='';for(let i=0;i<count;i++){const x=i*total,dist=Math.abs(i-count/2)/(count/2),maxH=H*(0.3+0.65*Math.pow(1-dist,1.5)),h=maxH*(0.3+0.7*Math.random()),y=cy-h/2,t=i/count,dur=(0.8+Math.random()*1.4).toFixed(2),delay=(Math.random()*1.2).toFixed(2);let color;if(t<0.33)color=`rgba(139,92,246,${0.4+0.5*Math.random()})`;else if(t<0.66)color=`rgba(34,211,238,${0.4+0.5*Math.random()})`;else color=`rgba(244,114,182,${0.4+0.5*Math.random()})`;html+=`<rect class="wave-bar" x="${x}" y="${y.toFixed(1)}" width="${barW}" height="${h.toFixed(1)}" rx="1.5" fill="${color}" style="--dur:${dur}s;--delay:${delay}s"/>`}svg.innerHTML=html;svg.setAttribute('viewBox',`0 0 ${W} ${H}`)}
+window.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{buildWaveform('waveform-svg')},100);FaceController.init()})
+
+let cfg={},corriendo=false
+
+window.addEventListener('DOMContentLoaded',async()=>{
+  cfg=await api.readConfig()
+  if(cfg.voxtralKey)   document.getElementById('key-voxtral').value  =cfg.voxtralKey
+  if(cfg.openrouterKey)   document.getElementById('key-openrouter').value  =cfg.openrouterKey
+  if(cfg.modeloOpenrouter) document.getElementById('modelo-openrouter').value =cfg.modeloOpenrouter
+  if(cfg.usarCorreccion) document.getElementById('cfg-usar-correccion').checked=true
+  if(cfg.carpetaSalida)document.getElementById('carpeta-salida').value=cfg.carpetaSalida
+  if(cfg.carpetaAudio) document.getElementById('carpeta-audio').value =cfg.carpetaAudio
+  if(cfg.driveId){document.getElementById('drive-id').value=cfg.driveId;document.getElementById('drive-id-sub').textContent='ID actual: '+cfg.driveId.substring(0,24)+'...'}
+  if(cfg.descargarAudios) document.getElementById('cfg-descargar-audios').checked=true
+  if(cfg.renombrarDrive)  document.getElementById('cfg-renombrar-drive').checked=true
+  if(cfg.renombrarPC)     document.getElementById('cfg-renombrar-pc').checked=true
+  if(cfg.sobrescribirSrt) document.getElementById('cfg-sobrescribir-srt').checked=true
+  if(cfg.sobrescribirWav) document.getElementById('cfg-sobrescribir-wav').checked=true
+  setFuente(cfg.fuente||'pc')
+  document.getElementById('drive-id').addEventListener('input',e=>{const v=e.target.value;document.getElementById('drive-id-sub').textContent=v?'ID actual: '+v.substring(0,24)+'...':'Sin ID configurado'})
+})
+
+function navTo(page,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');if(el)el.classList.add('active');if(page==='procesar')setTimeout(()=>buildWaveform('waveform-svg'),50)}
+function openExt(url){api.abrirCarpeta(url)}
+function toggleKey(id,btn){const inp=document.getElementById(id);if(inp.type==='password'){inp.type='text';btn.textContent='ocultar'}else{inp.type='password';btn.textContent='mostrar'}}
+function setStatus(estado,texto){const pill=document.getElementById('status-pill');pill.className='status-pill '+estado;pill.querySelector('.status-dot').className='status-dot'+(estado==='running'?' pulse':'');document.getElementById('status-text').textContent=texto}
+function logLine(txt,clase='log-info'){const el=document.getElementById('log');const d=document.createElement('div');d.className=clase;d.textContent=txt;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function limpiarLog(){document.getElementById('log').innerHTML=''}
+function parsearLinea(txt){if(txt.includes('✅')||txt.includes('Listo')||txt.includes('completad'))return'log-ok';if(txt.includes('❌')||txt.includes('Error'))return'log-err';if(txt.includes('⏳')||txt.includes('Esperando')||txt.includes('⏭️'))return'log-warn';return'log-info'}
+function updateProgress(txt){const m=txt.match(/\[(\d+)\/(\d+)\]/);if(m)setRingProgress(Math.round(parseInt(m[1])/parseInt(m[2])*100))}
+function setRingProgress(pct){const fill=document.getElementById('ring-fill');if(fill)fill.style.strokeDashoffset=170-(pct/100)*170;const label=document.getElementById('ring-pct');if(label)label.textContent=pct+'%'}
+function setFaceState(state){FaceController.setState(state);const b=document.getElementById('face-state-badge');if(b)b.textContent=state}
+
+async function reconectarDrive(){logLine('🔄 Eliminando token de Drive...','log-warn');try{const r=await api.driveResetToken();if(r.ok)logLine('✅ Token eliminado. La próxima ejecución autorizará.','log-ok');else logLine('❌ Error: '+r.error,'log-err')}catch(e){logLine('❌ Error: '+e.message,'log-err')}}
+function setFuente(fuente){const esPC=fuente==='pc';document.getElementById('panel-pc').style.display=esPC?'block':'none';document.getElementById('panel-drive').style.display=esPC?'none':'block';document.getElementById('src-pc').classList.toggle('active',esPC);document.getElementById('src-drive').classList.toggle('active',!esPC);document.getElementById('cfg-panel-pc').style.display=esPC?'block':'none';document.getElementById('cfg-panel-drive').style.display=esPC?'none':'block';cfg.fuente=fuente;const driveId=document.getElementById('drive-id').value;if(driveId)document.getElementById('drive-id-sub').textContent='ID actual: '+driveId.substring(0,24)+'...';setFaceState('surprised');setTimeout(()=>setFaceState('idle'),1000)}
+
+async function elegirCarpetaAudio(){const ruta=await api.elegirCarpeta();if(!ruta)return;document.getElementById('carpeta-audio').value=ruta;cfg.carpetaAudio=ruta;setFaceState('success');setTimeout(()=>setFaceState('idle'),1200);try{const carpetaSalida=document.getElementById('carpeta-salida').value.trim();const stats=await api.folderStats({dir:ruta,srtDir:carpetaSalida||null});if(stats.ok)actualizarResumen(stats.archivos,stats.totalBytes,cfg.fuente||'pc',ruta,stats.duracionSeg)}catch(_){}}
+async function elegirSalida(){const ruta=await api.elegirSalida();if(ruta){document.getElementById('carpeta-salida').value=ruta;cfg.carpetaSalida=ruta;setFaceState('hover');setTimeout(()=>setFaceState('idle'),800)}}
+
+async function ejecutar(){
+  if(corriendo)return
+  const config=await api.readConfig(),voxtralKey=config.voxtralKey||'',openrouterKey=config.openrouterKey||'',modeloOpenrouter=config.modeloOpenrouter||'minimax/minimax-m2.5:free',fuente=cfg.fuente||'pc',desdePC=fuente==='pc',usarCorreccion=document.getElementById('cfg-usar-correccion').checked
+  const carpetaAudio=document.getElementById('carpeta-audio').value.trim()
+  const driveId=document.getElementById('drive-id').value.trim()
+  const carpetaSalida=document.getElementById('carpeta-salida').value.trim()
+  if(!voxtralKey){logLine('⚠️  Falta API key de Voxtral.','log-err');setFaceState('error');return}
+  if(desdePC&&!carpetaAudio){logLine('⚠️  Selecciona carpeta de audios.','log-err');setFaceState('confused');return}
+  if(!desdePC&&!driveId){logLine('⚠️  Introduce el ID de Drive.','log-err');setFaceState('confused');return}
+  if(!carpetaSalida){logLine('⚠️  Selecciona carpeta de salida.','log-err');setFaceState('confused');return}
+  await api.writeConfig({...config,fuente,carpetaAudio,driveId,carpetaSalida})
+  cfg={...config,fuente,carpetaAudio,driveId,carpetaSalida}
+  const carpetaNombre=desdePC?(carpetaAudio.split(/[\\/]/).pop()||carpetaAudio):'Google Drive'
+  actualizarResumen(null,null,fuente,desdePC?carpetaAudio:'Drive: '+driveId.substring(0,18))
+  corriendo=true;document.getElementById('btn-run').disabled=true
+  setStatus('running','transcribiendo...');setRingProgress(0)
+  document.getElementById('ring-status').textContent='procesando...';document.getElementById('ring-status').className='ring-status running'
+  document.getElementById('ring-done').classList.remove('visible')
+  setFaceState('click')  // 8. determined_start antes de processing
+  logLine('─── Transcripción con Voxtral ──────────────────','log-warn')
+  api.removeListeners()
+  api.onStdout(data=>{data.split('\n').forEach(l=>{if(!l.trim())return;const sm=l.match(/^STATS:(\d+):(\d+)$/);if(sm){actualizarResumen(parseInt(sm[1]),parseInt(sm[2]),fuente,desdePC?carpetaAudio:'Google Drive',null);return}updateProgress(l);logLine(l,parsearLinea(l));const m=l.match(/\[(\d+)\/(\d+)\]/);if(m){document.getElementById('res-archivos').textContent=m[2]+' archivos';document.getElementById('res-carpeta').textContent=carpetaNombre}})})
+  api.onStderr(data=>{data.split('\n').forEach(l=>{if(!l.trim()||l.includes('WARNING')||l.includes('DeprecationWarning'))return;logLine(l,'log-err')})})
+  api.onDone(async code=>{
+    corriendo=false;document.getElementById('btn-run').disabled=false;setRingProgress(100)
+    if(code===0){
+      setStatus('done','completado');document.getElementById('ring-status').textContent='listo';document.getElementById('ring-status').className='ring-status done';document.getElementById('ring-done').classList.add('visible')
+      setFaceState('result');setTimeout(()=>setFaceState('idle'),3500)  // 9. triumph_joy
+      logLine('─── ✅ SRT generados ─────────────────────────','log-ok');logLine('📂 Guardados en: '+carpetaSalida,'log-ok')
+      const renombrarActivado=desdePC?cfg.renombrarPC:cfg.renombrarDrive
+      if(renombrarActivado){logLine('─── Renombrando archivos...','log-warn');try{let resultado;if(desdePC){resultado=await api.renameLocal({audioDir:carpetaAudio,srtDir:carpetaSalida,renameAudio:true,renameSrt:true})}else{resultado=await api.renameDrive({audioDir:carpetaSalida,srtDir:carpetaSalida,renameAudio:cfg.descargarAudios||false,renameSrt:true})}if(resultado.ok){const totalRen=resultado.srt.renamed.length+resultado.audio.renamed.length;logLine('✅ Renombrado: '+totalRen+' archivo(s)','log-ok');if(resultado.srt.errors.length)logLine('⚠️  Errores SRT: '+resultado.srt.errors.map(e=>e.file).join(', '),'log-warn');if(resultado.audio.errors.length)logLine('⚠️  Errores audio: '+resultado.audio.errors.map(e=>e.file).join(', '),'log-warn')}else{logLine('❌ Error en renombrado: '+resultado.error,'log-err')}}catch(e){logLine('❌ Error en renombrado: '+e.message,'log-err')}}
+      const dirParaStats=desdePC?carpetaAudio:(cfg.descargarAudios?carpetaSalida:null)
+      try{const stats=await api.folderStats({dir:dirParaStats,srtDir:carpetaSalida});if(stats.ok){actualizarResumen(stats.archivos,stats.totalBytes,fuente,dirParaStats||carpetaSalida,stats.duracionSeg);setFaceState('result');setTimeout(()=>setFaceState('idle'),2500)}}catch(_){}
+    }else{
+      setStatus('error','error');document.getElementById('ring-status').textContent='error';document.getElementById('ring-status').className='ring-status error'
+      setFaceState('error');setTimeout(()=>setFaceState('idle'),4000)  // 10. concerned_error
+      logLine('─── ❌ Error (código '+code+') ─','log-err')
+    }
+  })
+  api.runPython({voxtralKey,openrouterKey,modeloOpenrouter,usarCorreccion,desdePC,carpetaAudio,driveId,carpetaSalida,guardarAudio:!desdePC&&(cfg.descargarAudios||false),sobrescribirSrt:cfg.sobrescribirSrt||false,sobrescribirWav:cfg.sobrescribirWav||false})
+}
+
+function actualizarResumen(archivos,totalBytes,fuente,carpeta,duracionSeg){
+  if(archivos!==null)document.getElementById('res-archivos').textContent=archivos?archivos+' archivos':'—'
+  if(carpeta!==null)document.getElementById('res-carpeta').textContent=carpeta?(carpeta.split(/[\\/]/).pop()||carpeta):'—'
+  if(totalBytes!==null&&totalBytes>0)document.getElementById('res-peso').textContent=formatBytes(totalBytes)
+  else if(totalBytes===0)document.getElementById('res-peso').textContent='—'
+  if(duracionSeg!=null&&duracionSeg>0)document.getElementById('res-duracion').textContent=formatDuracion(duracionSeg)
+  else{const actual=document.getElementById('res-duracion').textContent;if(actual==='—'||actual==='')document.getElementById('res-duracion').textContent='—'}
+}
+function formatDuracion(seg){const h=Math.floor(seg/3600),m=Math.floor((seg%3600)/60),s=Math.floor(seg%60);if(h>0)return h+'h '+m+'m';if(m>0)return m+'m '+s+'s';return s+'s'}
+function formatBytes(b){if(b>=1073741824)return(b/1073741824).toFixed(2)+' GB';if(b>=1048576)return(b/1048576).toFixed(1)+' MB';if(b>=1024)return(b/1024).toFixed(1)+' KB';return b+' B'}
+
+function guardarCfgDescarga(){cfg.descargarAudios=document.getElementById('cfg-descargar-audios').checked;cfg.renombrarDrive=document.getElementById('cfg-renombrar-drive').checked;cfg.renombrarPC=document.getElementById('cfg-renombrar-pc').checked;cfg.sobrescribirSrt=document.getElementById('cfg-sobrescribir-srt').checked;cfg.sobrescribirWav=document.getElementById('cfg-sobrescribir-wav').checked;api.writeConfig(cfg);const btn=document.querySelector('.cfg-btn-guardar');const prev=btn.innerHTML;btn.textContent='✓ Guardado';btn.style.color='var(--ok)';setTimeout(()=>{btn.innerHTML=prev;btn.style.color=''},1800)}
+async function guardarConfig(){const nueva={...cfg,voxtralKey:document.getElementById('key-voxtral').value.trim(),openrouterKey:document.getElementById('key-openrouter').value.trim(),modeloOpenrouter:document.getElementById('modelo-openrouter').value,usarCorreccion:document.getElementById('cfg-usar-correccion').checked};await api.writeConfig(nueva);cfg=nueva;const msg=document.getElementById('save-msg');msg.style.display='inline';setTimeout(()=>msg.style.display='none',2000)}
+
+async function nuevaSerie(){const{tieneSRT,cantidad}=await api.checkSerie();const msg=document.getElementById('modal-msg');if(tieneSRT){msg.innerHTML=`Hay <strong style="color:var(--violet)">${cantidad} archivos SRT</strong> en la carpeta de trabajo.<br><br>¿Qué quieres hacer antes de empezar una nueva serie?`;document.getElementById('modal-btn-nolimpiar').textContent='No guardar';document.getElementById('modal-btn-guardar').style.display='inline-flex'}else{msg.innerHTML=`No hay archivos en curso.<br><br>Se limpiarán los temporales y podrás empezar desde cero.`;document.getElementById('modal-btn-nolimpiar').textContent='Limpiar y continuar';document.getElementById('modal-btn-guardar').style.display='none'}document.getElementById('modal-overlay').style.display='flex'}
+function modalCancelar(){document.getElementById('modal-overlay').style.display='none'}
+async function modalGuardar(){document.getElementById('modal-overlay').style.display='none';const r=await api.guardarYLimpiar();if(!r.ok){if(r.motivo!=='cancelado')logLine('❌ Error: '+r.motivo,'log-err');return}logLine('✅ '+r.guardados+' SRT guardados en: '+r.destino,'log-ok');logLine('🆕 Listo para nueva serie.','log-ok');resetearUI()}
+async function modalNoGuardar(){document.getElementById('modal-overlay').style.display='none';const r=await api.limpiarSinGuardar();if(!r.ok){logLine('❌ Error: '+r.motivo,'log-err');return}logLine('🆕 Listo para nueva serie.','log-ok');resetearUI()}
+function resetearUI(){setStatus('','listo');setRingProgress(0);document.getElementById('ring-status').textContent='listo';document.getElementById('ring-status').className='ring-status';document.getElementById('ring-done').classList.remove('visible');corriendo=false;document.getElementById('btn-run').disabled=false;setFaceState('idle');navTo('procesar',document.querySelector('[data-page="procesar"]'))}
+</script>
+</body>
+</html>

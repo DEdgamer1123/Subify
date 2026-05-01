@@ -1,0 +1,21 @@
+node_modules/
+config.json
+*.json.bak
+token_drive.json
+credentials.json
+srt_trabajo/
+*.flac
+*.zip
+.env
+
+# Electron build
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
