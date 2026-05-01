@@ -1,6 +1,6 @@
 # SRT Automático
 
-Automatización de subtítulos SRT: Audio → Voxtral (transcripción) → Gemini/Claude (corrección) → SRT.
+Automatización de subtítulos SRT: Audio → Voxtral (transcripción) → OpenRouter (corrección) → SRT.
 
 ## Requisitos
 
@@ -11,6 +11,15 @@ Automatización de subtítulos SRT: Audio → Voxtral (transcripción) → Gemin
 - Node.js 18+
 - Python 3.8+
 - ffmpeg en el PATH
+
+## Descargas
+
+| Tipo | Archivo |
+|------|---------|
+| Instalador | [Subify Setup 1.0.0.exe](https://github.com/DEdgamer1123/Subify/releases) |
+| Portable | [Subify 1.0.0 (Portable).exe](https://github.com/DEdgamer1123/Subify/releases) |
+
+**Nota:** La versión instalada incluye todas las dependencias. No necesitas instalar Node.js, Python ni ninguna librería.
 
 ## Instalación
 
@@ -31,7 +40,7 @@ Todas las credenciales se guardan en `~/.srt_automatico/` (fuera del proyecto, n
 
 | Archivo | Contenido |
 |---|---|
-| `~/.srt_automatico/config.json` | API keys de Voxtral, Gemini, Claude |
+| `~/.srt_automatico/config.json` | API keys de Voxtral, OpenRouter |
 | `~/.srt_automatico/credentials.json` | Credenciales OAuth de Google Drive |
 | `~/.srt_automatico/token_drive.json` | Token de sesión de Drive (se genera automáticamente) |
 
@@ -63,15 +72,4 @@ SRT-Automatico/
 ├── config.json          # API keys
 ├── credentials.json     # OAuth Google Drive
 └── token_drive.json     # Token de sesión (auto-generado)
-
-## Descargas
-
-Descarga los instaladores desde la sección [Releases](https://github.com/DEdgamer1123/Subify/releases):
-
-| Tipo | Archivo |
-|------|---------|
-| Instalador | Subify Setup 1.0.0.exe |
-| Portable | Subify 1.0.0 (Portable).exe |
-
-**Nota:** La versión instalada incluye todas las dependencias. No necesitas instalar Node.js, Python ni ninguna librería.
 ```
